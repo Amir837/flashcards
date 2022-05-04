@@ -12,6 +12,7 @@ import ConvertPGNtoArray from "./ConvertPGNtoArray";
 export default function App() {
   // http://localhost:3000/?initialPGN=1.%20e4%20e5&pgn=2.%20Nf3%20Nc6%203.%20Bb5%20a6%204.%20Ba4%20Nf6%205.%20O-O&initialFEN=rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR%20w%20KQkq%20-%200%202&orientation=black&title=Title&description=description
 
+  console.log("hi from App");
   // temporarry variables (read from url)
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPGN = searchParams.get("initialPGN")
