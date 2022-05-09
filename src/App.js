@@ -10,28 +10,27 @@ import { pgnPrint } from '@mliebelt/pgn-viewer';
 import ConvertPGNtoArray from "./ConvertPGNtoArray";
 
 export default function App() {
-  // http://localhost:3000/?initialPGN=1.%20e4%20e5&pgn=2.%20Nf3%20Nc6%203.%20Bb5%20a6%204.%20Ba4%20Nf6%205.%20O-O&initialFEN=rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR%20w%20KQkq%20-%200%202&orientation=black&title=Title&description=description
+  // http://localhost:3000/flashcards/?pgn=1.%20e4%20e5%202.%20Nf3%20Nc6%203.%20Bb5%20a6%204.%20Ba4%20Nf6%205.%20O-O%20Be7%206.%20Re1%20b5%207.%20Bb3&point=5&orientation=white&title=Closed%20Ruy%20Lopez&description=Black%20chose%20not%20to%20capture%20White%27s%20e-pawn%20on%20the%20previous%20move,%20but%20the%20threat%20still%20hangs%20over%20White%27s%20head.%20White%20typically%20removes%20it%20with
 
-  console.log("hi from App");
-  // temporarry variables (read from url)
+  // Set UP
+  // URL:
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialPGN = searchParams.get("initialPGN")
-  const initialFEN = searchParams.get("initialFEN"); 
-  const plannedPGN = searchParams.get("pgn");                         // It's good to convert it to array. 
+  const plannedPGN = searchParams.get("pgn");
+  const point = parseInt(searchParams.get("point"));
   const orientation = searchParams.get("orientation");
   const title = searchParams.get("title");
   const description = searchParams.get("description");
 
-  // config for chess
-  const [fen, setFen] = useState(initialFEN);
+  const ArrPlannedPGN = useRef([]);
+  const initialPGN = useRef();
+  const initialFEN = useRef(); 
+  
+  const [fen, setFen] = useState();
   let chess = new Chess(fen);
-  const turnColor = chess.turn() === "w" ? "white" : "black";         // ??? I don't know how to set up chess.turn()
+  const turnColor = chess.turn() === "w" ? "white" : "black";
 
-  // pgn
-  const pgn = useRef(initialPGN);
-  const ArrPlannedPGN = ConvertPGNtoArray(plannedPGN); 
-
-  const [ind, setInd] = useState(0);
+  const pgn = useRef();
+  const [ind, setInd] = useState(point);
 
   // Very small function
   const isItPlannedMove = () => {
@@ -44,24 +43,24 @@ export default function App() {
   }
 
   const getPlannedMove = () => {
-    return (ArrPlannedPGN[ind]);
+    return (ArrPlannedPGN.current[ind]);
   }
 
   const changePGN_forPrinting = () => {
     var temp = chess.history();
-    pgn.current += temp[temp.length - 1] + " ";
+    pgn.current += " " + temp[temp.length - 1];
   }
   //////////////////////////////////////////////
 
   const resetOfChess = () => {
-    pgn.current = initialPGN;
-    chess = new Chess(initialFEN);
+    pgn.current = initialPGN.current;
+    chess = new Chess(initialFEN.current);
     setFen(chess.fen);
-    setInd(0);
+    setInd(point);
   }
 
   const movable = (e) => {
-    if (ind < ArrPlannedPGN.length){
+    if (ind < ArrPlannedPGN.current.length){
       return(toDests(e));
     }
     else{
@@ -94,17 +93,38 @@ export default function App() {
   };
 
   const handleHint = () => {
-    chess.move(ArrPlannedPGN[ind]);
+    chess.move(ArrPlannedPGN.current[ind]);
     setFen(chess.fen());
-    if (ind < ArrPlannedPGN.length){
+    if (ind < ArrPlannedPGN.current.length){
       changePGN_forPrinting();
       setInd(ind + 1);
     }
   }
 
+  // const countRenders = useRef(0);
   useEffect(() => {
     pgnPrint('PGNp', { pgn: pgn.current, notationLayout: 'list' });
-  })
+
+    // // counting Renders
+    // countRenders.current++;
+    // console.log(countRenders.current);
+  });
+
+  // executes only once at the end of first rendering 
+  useEffect(() => {
+    ArrPlannedPGN.current = ConvertPGNtoArray(plannedPGN);
+    const tempChess = new Chess();
+
+    for (let i = 0; i < point; i++){
+      tempChess.move(ArrPlannedPGN.current[i]);
+      console.log(i, ArrPlannedPGN.current[i], tempChess.history());
+    }
+
+    initialPGN.current = tempChess.history().join(' ');
+    initialFEN.current = tempChess.fen();
+    setFen(initialFEN.current);
+    pgn.current = initialPGN.current;
+  }, []);
 
   return (
     <div className="App">
@@ -135,7 +155,7 @@ export default function App() {
       <button onClick={handleHint}>Hint</button>
 
       <div>
-        { ind === ArrPlannedPGN.length && <h1>Good Job!</h1> }
+        { ind >= ArrPlannedPGN.current.length && <h1>Good Job!</h1> }
       </div>
     </div>
   );

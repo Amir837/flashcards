@@ -2,17 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from './App';
-
+import Test from './Test';
+import JSTest from './JSTest';
 
 ReactDOM.render(
-    <React.StrictMode>
-      <BrowserRouter>
+    <BrowserRouter>
       <Routes>
-        <Route path = "/" element = { <h1>I am here</h1> } />
-        <Route path = "/test" element = { <h1>Test</h1> } />
-        <Route path = "/app" element = { <App /> } />
+        <Route path = "/flashcards" element = { <App /> } />
+        <Route path = "/Test" element = { <JSTest /> } />
       </Routes>
-      </BrowserRouter>
-    </React.StrictMode>,
+    </BrowserRouter>,
     document.getElementById("root")
 );

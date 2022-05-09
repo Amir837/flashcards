@@ -31,18 +31,18 @@
 
 .leftbox {
   float:left; 
-  width:35%;
+  width:30%;
   height:512px;
 }
 
 .middlebox{
   float:left; 
-  width:30%;
+  width:40%;
   height:512px;
 }
 
 .rightbox{
   float:right;
-  width:35%;
+  width:30%;
   height:512px;
 }
