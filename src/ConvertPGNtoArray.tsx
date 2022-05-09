@@ -1,7 +1,6 @@
 export default function ConvertPGNtoArray(PGNstr: String){
     // split by space
     // delete all items that start wiht number
-    console.log("converting");
     
     var splited :String[] = PGNstr.split(' ');
 

@@ -117,7 +117,6 @@ export default function App() {
 
     for (let i = 0; i < point; i++){
       tempChess.move(ArrPlannedPGN.current[i]);
-      console.log(i, ArrPlannedPGN.current[i], tempChess.history());
     }
 
     initialPGN.current = tempChess.history().join(' ');
