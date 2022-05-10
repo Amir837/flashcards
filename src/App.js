@@ -10,13 +10,24 @@ import { pgnPrint } from '@mliebelt/pgn-viewer';
 import ConvertPGNtoArray from "./ConvertPGNtoArray";
 
 export default function App() {
-  // http://localhost:3000/flashcards/?pgn=1.%20e4%20e5%202.%20Nf3%20Nc6%203.%20Bb5%20a6%204.%20Ba4%20Nf6%205.%20O-O%20Be7%206.%20Re1%20b5%207.%20Bb3&point=5&orientation=white&title=Closed%20Ruy%20Lopez&description=Black%20chose%20not%20to%20capture%20White%27s%20e-pawn%20on%20the%20previous%20move,%20but%20the%20threat%20still%20hangs%20over%20White%27s%20head.%20White%20typically%20removes%20it%20with
+  // Valid Link:
+  // http://localhost:3000/flashcards/?pgn=1.%20e4%20e5%202.%20Nf3%20Nc6%203.%20Bb5%20a6%204.%20Ba4%20Nf6%205.%20O-O%20Be7%206.%20Re1%20b5%207.%20Bb3&move=3&turn=black&orientation=white&title=Closed%20Ruy%20Lopez&description=Black%20chose%20not%20to%20capture%20White%27s%20e-pawn%20on%20the%20previous%20move,%20but%20the%20threat%20still%20hangs%20over%20White%27s%20head.%20White%20typically%20removes%20it%20with
+  
+  // API: 
+  // http://localhost:3000/flashcards/?
+  // pgn=&
+  // move=&
+  // turn=&
+  // orientation=&
+  // title=&
+  // description=
 
   // Set UP
   // URL:
   const [searchParams, setSearchParams] = useSearchParams();
   const plannedPGN = searchParams.get("pgn");
-  const point = parseInt(searchParams.get("point"));
+  const move = parseInt(searchParams.get("move"));
+  const turn = searchParams.get("turn");
   const orientation = searchParams.get("orientation");
   const title = searchParams.get("title");
   const description = searchParams.get("description");
@@ -24,13 +35,14 @@ export default function App() {
   const ArrPlannedPGN = useRef([]);
   const initialPGN = useRef();
   const initialFEN = useRef(); 
+  const point = useRef();
   
   const [fen, setFen] = useState();
   let chess = new Chess(fen);
   const turnColor = chess.turn() === "w" ? "white" : "black";
 
   const pgn = useRef();
-  const [ind, setInd] = useState(point);
+  const [ind, setInd] = useState(-1);
 
   // Very small function
   const isItPlannedMove = () => {
@@ -56,7 +68,7 @@ export default function App() {
     pgn.current = initialPGN.current;
     chess = new Chess(initialFEN.current);
     setFen(chess.fen);
-    setInd(point);
+    setInd(point.current);
   }
 
   const movable = (e) => {
@@ -112,10 +124,17 @@ export default function App() {
 
   // executes only once at the end of first rendering 
   useEffect(() => {
+    if (turn == "white"){
+      point.current = (move - 1) * 2;
+    }
+    else {
+      point.current = (move - 1) * 2 + 1; 
+    }
+
     ArrPlannedPGN.current = ConvertPGNtoArray(plannedPGN);
     const tempChess = new Chess();
 
-    for (let i = 0; i < point; i++){
+    for (let i = 0; i < point.current; i++){
       tempChess.move(ArrPlannedPGN.current[i]);
     }
 
@@ -123,6 +142,7 @@ export default function App() {
     initialFEN.current = tempChess.fen();
     setFen(initialFEN.current);
     pgn.current = initialPGN.current;
+    setInd(point.current);
   }, []);
 
   return (
