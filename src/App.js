@@ -46,6 +46,9 @@ export default function App() {
 
   // Very small function
   const isItPlannedMove = () => {
+    if (chess.in_check()){
+      return(getLastMove() === getPlannedMove() + '+')
+    }
     return(getLastMove() === getPlannedMove());
   }
 
