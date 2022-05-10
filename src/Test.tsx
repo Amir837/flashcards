@@ -1,8 +1,13 @@
 import { useSearchParams } from "react-router-dom";
 import { Chess } from "chess.js";
 import ConvertPGNtoArray from "./ConvertPGNtoArray";
+import useSound from 'use-sound';
+
+const berserk = require("./Sound/berserk.mp3");
 
 export default function Test() {
+    console.log(berserk);
+
     // some Action 
     console.log("I am here");
     // for action 
@@ -43,7 +48,10 @@ export default function Test() {
 }
 
 function NextTest(str: any, point: any, history: any, ArrPlannedPGN: any) {
+    const [play] = useSound(berserk);
+
     const handleClick = () => {
+        play(); 
         console.log("Click");
     }
 

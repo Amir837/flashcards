@@ -9,7 +9,8 @@ ReactDOM.render(
     <BrowserRouter>
       <Routes>
         <Route path = "/flashcards" element = { <App /> } />
-        <Route path = "/Test" element = { <JSTest /> } />
+        <Route path = "/JSTest" element = { <JSTest /> } />
+        <Route path = "/Test" element = { <Test /> } />
       </Routes>
     </BrowserRouter>,
     document.getElementById("root")

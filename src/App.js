@@ -8,6 +8,13 @@ import { useSearchParams } from "react-router-dom";
 import { Chess } from "chess.js";
 import { pgnPrint } from '@mliebelt/pgn-viewer';
 import ConvertPGNtoArray from "./ConvertPGNtoArray";
+import useSound from "use-sound";
+
+// Sound
+const moveSound = require("./Sound/move.mp3");
+const captureSound = require("./Sound/capture.mp3");
+const errorSound = require("./Sound/error.mp3");
+const energySound = require("./Sound/energy.mp3");
 
 export default function App() {
   // Valid Link:
@@ -22,7 +29,6 @@ export default function App() {
   // title=&
   // description=
 
-  // Set UP
   // URL:
   const [searchParams, setSearchParams] = useSearchParams();
   const plannedPGN = searchParams.get("pgn");
@@ -32,19 +38,26 @@ export default function App() {
   const title = searchParams.get("title");
   const description = searchParams.get("description");
 
+  // Variables that computed once
   const ArrPlannedPGN = useRef([]);
   const initialPGN = useRef();
   const initialFEN = useRef(); 
   const point = useRef();
   
+  // Variables that determine current state
   const [fen, setFen] = useState();
   let chess = new Chess(fen);
   const turnColor = chess.turn() === "w" ? "white" : "black";
-
   const pgn = useRef();
   const [ind, setInd] = useState(-1);
 
-  // Very small function
+  // useSound
+  const [playMoveSound] = useSound(moveSound);
+  const [playCaptureSound] = useSound(captureSound);
+  const [playErrorSound] = useSound(errorSound);
+  const [playEnergySound] = useSound(energySound);
+
+  // Arrow Functions:
   const isItPlannedMove = () => {
     if (chess.in_check()){
       return(getLastMove() === getPlannedMove() + '+')
@@ -65,7 +78,6 @@ export default function App() {
     var temp = chess.history();
     pgn.current += " " + temp[temp.length - 1];
   }
-  //////////////////////////////////////////////
 
   const resetOfChess = () => {
     pgn.current = initialPGN.current;
@@ -96,11 +108,19 @@ export default function App() {
     setFen(chess.fen());
 
     if (isItPlannedMove()){
+      if (getLastMove().includes("x")){
+        playCaptureSound();
+      }
+      else{
+        playMoveSound();
+      }
+
       changePGN_forPrinting();
       setInd(ind + 1);
     }
     else {
       setTimeout(() => {
+        playErrorSound();
         chess.undo();
         setFen(chess.fen);
       }, 100)
@@ -108,12 +128,30 @@ export default function App() {
   };
 
   const handleHint = () => {
+    if (ind >= ArrPlannedPGN.current.length){
+      return; 
+    }
+
     chess.move(ArrPlannedPGN.current[ind]);
     setFen(chess.fen());
     if (ind < ArrPlannedPGN.current.length){
       changePGN_forPrinting();
       setInd(ind + 1);
     }
+    
+    if (getLastMove().includes("x")){
+      playCaptureSound();
+    }
+    else{
+      playMoveSound();
+    }
+  }
+
+  const goodJob = () => {
+    playEnergySound();
+    return(
+      <h1>Good Job</h1>
+    );
   }
 
   // const countRenders = useRef(0);
@@ -177,8 +215,9 @@ export default function App() {
       <button onClick={handleHint}>Hint</button>
 
       <div>
-        { ind >= ArrPlannedPGN.current.length && <h1>Good Job!</h1> }
+        { ind >= ArrPlannedPGN.current.length && goodJob() }
       </div>
     </div>
   );
 }
+
