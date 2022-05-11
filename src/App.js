@@ -11,10 +11,10 @@ import ConvertPGNtoArray from "./ConvertPGNtoArray";
 import useSound from "use-sound";
 
 // Sound
-const moveSound = require("./Sound/move.mp3");
-const captureSound = require("./Sound/capture.mp3");
-const errorSound = require("./Sound/error.mp3");
-const energySound = require("./Sound/energy.mp3");
+// const moveSound = require("./Sound/move.mp3");
+// const captureSound = require("./Sound/capture.mp3");
+// const errorSound = require("./Sound/error.mp3");
+// const energySound = require("./Sound/energy.mp3");
 
 export default function App() {
   // Valid Link:
@@ -28,6 +28,11 @@ export default function App() {
   // orientation=&
   // title=&
   // description=
+
+  const moveSound = require("./Sound/move.mp3");
+  const captureSound = require("./Sound/capture.mp3");
+  const errorSound = require("./Sound/error.mp3");
+  const energySound = require("./Sound/energy.mp3");
 
   // URL:
   const [searchParams, setSearchParams] = useSearchParams();
